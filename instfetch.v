@@ -35,18 +35,17 @@
  reg [31:0] pc;
  reg [31:0] instmem;
  reg [31:0] instreg;
- 
  wire [31:0] irout1;
  wire [31:0] npcout1;
  
- wire [31:0] inp1;
+ //wire [31:0] inp1;
  wire [31:0] outp;                                             
-
- assign inp1 = pc + 32'b0000_0000_0000_0000_0000_0000_0000_0001;     
+ reg [31:0] temp_pc;
+ integer  inp1;  
 // assign inp1 = pc + 32'b0000_0000_0000_0000_0000_0000_0000_0100;    //  a+b=s=inp1 ,b=4 (PC+4)
  
- assign outp = branch_en ? alu_branch_in : inp1;                             // mux2to1
- 
+// assign outp = branch_en ? alu_branch_in : inp1;                             // mux2to1
+ assign outp=alu_branch_in;
  assign irout1 = instreg;  // instruction output 
  integer counter;
  assign npcout1 = pc;       //  PC output
@@ -57,9 +56,10 @@
         begin
           counter <= 0;
           fetchclock<=1'b0;
+          inp1=0;
         end
         else begin
-          if(counter >= 5)begin
+          if(counter >= 4)begin
                      counter <= 0;
                      fetchclock<=~fetchclock;
               end
@@ -71,16 +71,25 @@
 
  always@(posedge fetchclock or negedge reset1)
    begin
+    
      if(~reset1)
      	 begin
      	   instreg <= 32'b0000_0000_0000_0000_0000_0000_0000_0000; 
-     	   pc      <= 32'b0000_0000_0000_0000_0000_0000_0000_0000;     	       	   
+     	   pc      <= 32'b0000_0000_0000_0000_0000_0000_0000_0000; 
+     	   inp1=1;    	       	   
      	 end     	                 
      else
      	begin
      		instreg <= inst_in1;
-     		pc      <= outp;     	
+     		if (branch_en==1)
+     		begin
+     		     pc <= outp;    
+     		end
+     		else 
+     		begin     		     
+     		     pc <= inp1;
+     		     inp1=inp1+1;
+     		end	
      	end       
    end 
-    
  endmodule

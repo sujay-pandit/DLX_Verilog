@@ -329,10 +329,11 @@
 //--------------------------------------------------J----------------------------------------------------------	   	     			   			
 	     	else if(opcode==J)  
 	     		begin	     	
-	     			if(~offset[25])      
-	     			  imout2 <= {6'b00_0000,offset[25:0]};                //  offset -> imout2
-	     			else
-	     				imout2 <= {1'b1,(~{6'b00_0000,offset[24:0]}+1)};    //  complemental code,and extend to 32 bits
+	     		    imout2<={6'b00_0000,offset[25:0]};
+	     			//if(~offset[25])      
+	     			 // imout2 <= {6'b00_0000,offset[25:0]};                //  offset -> imout2
+	     			//else
+	     				//imout2 <= {1'b1,(~{6'b00_0000,offset[24:0]}+1)};    //  complemental code,and extend to 32 bits
 	     	  end	 
 //-------------------------------------------------JAL---------------------------------------------------------	   	     			   			
 	     	else if(opcode==JAL)  

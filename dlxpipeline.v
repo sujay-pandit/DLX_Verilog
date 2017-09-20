@@ -9,7 +9,7 @@
  
  module dlxpipeline(clock,reset,pc,inst_in,memdata_in,memdata_out,mem_addr,mem_wr_en,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
                    ,regs11,regs12,regs13,regs14,regs15,regs16,regs17,regs18,regs19,regs20,regs21,regs22,regs23,regs24,regs25,
-                   regs26,regs27,regs28,regs29,regs30,regs31); 
+                   regs26,regs27,regs28,regs29,regs30,regs31,branch_en,alu_branch,alu_out34); 
   
  input [31:0] inst_in; 
  input [31:0] memdata_in; 
@@ -52,7 +52,9 @@
     output  [31:0]regs29;
     output  [31:0]regs30;
     output  [31:0]regs31;
-  
+    output branch_en;
+    output [31:0] alu_branch;
+   output [31:0] alu_out34;
   
  wire branch_en,reg_write_en,mem_wr_en; 
  wire [4:0]   reg_add; 

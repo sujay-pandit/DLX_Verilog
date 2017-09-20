@@ -43,6 +43,9 @@ wire [31:0] mdata_o;
 wire mem_wr_en_o;
 wire [31:0] mem_addr_in_use;
 wire [31:0] mem_addr_in_use_value;
+wire branch_en;
+wire [31:0] alu_branch;
+wire [31:0] alu_out34;
 
 
 dlxpipeline lzy(.clock(clock_i),.reset(reset_i),.pc(pc_o),.inst_in(inst_i),.memdata_in(mdata_i),
@@ -52,7 +55,7 @@ dlxpipeline lzy(.clock(clock_i),.reset(reset_i),.pc(pc_o),.inst_in(inst_i),.memd
                         ,.regs11(regs11),.regs12(regs12),.regs13(regs13),.regs14(regs14),.regs15(regs15),.regs16(regs16),.regs17(regs17),.regs18(regs18),
                         .regs19(regs19),.regs20(regs20)
                         ,.regs21(regs21),.regs22(regs22),.regs23(regs23),.regs24(regs24),.regs25(regs25),.regs26(regs26),.regs27(regs27),.regs28(regs28),
-                         .regs29(regs29),.regs30(regs30),.regs31(regs31));
+                         .regs29(regs29),.regs30(regs30),.regs31(regs31),.branch_en(branch_en),.alu_branch(alu_branch),.alu_out34(alu_out34));
 			         
 RAM_BLOCK ram(.adr_i(mem_addr_o),.clk_i(clock_i),.we_i(mem_wr_en_o),.data_i(mdata_o),.data_o(mdata_i),.reset(reset_i),.mem_addr_in_use(mem_addr_in_use),
                                 .mem_addr_in_use_value(mem_addr_in_use_value));

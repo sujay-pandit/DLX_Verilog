@@ -91,7 +91,8 @@
  assign func[5:0] = inst_in3[5:0]; 
  
  assign sum_a_imm = imin3 + ain3;
- assign sum_a_npc = imin3 + npcout3;
+ //assign sum_a_npc = imin3 + npcout3;
+ assign sum_a_npc=imin3;
  assign sum_a_b = ain3 + bin3;
  assign sra_a_imm = ain3 >> imin3[4:0];
  assign sra_a_b = ain3 >> bin3[4:0];
@@ -110,12 +111,16 @@
      	 end     	                 
      else
      	begin
+     	  if(branch_en==1)
+     	  branch_en<=0;
+     	
      		inst_out3 <= inst_in3;                      // IR3 -> IR4
      		//bout3 <= bin3;                              // B3 ->B4
      		if((opcode!=SB)&(opcode!=SH)&(opcode!=SW))
      		  mem_wr_en <= 0;
      		else if((opcode<BEQZ)|(opcode>RFE))
      			branch_en <= 1'b0;
+     			
 //------------------------------LB,LBU,LHU,LH,LW-----------------------------------
      		if((opcode==LB)|(opcode==LBU)|(opcode==LH)|(opcode==LHU)|(opcode==LW))
    			  begin
@@ -405,8 +410,10 @@
 		   			  	  alu_out3 <= 1;  
 		   			  	else
 		   			  		alu_out3 <= 0;                    
-		   			  end 		  	    		  	    	  	    	 			  	    			  	
-   			  end    			  			   			      			   			   			   			    			    			  			   			     			    			     			  			    			   			      			    		  			    			  			    		    		
+		   			  end 
+		   				  	    		  	    	  	    	 			  	    			  	
+   			  end
+   		    			  			   			      			   			   			   			    			    			  			   			     			    			     			  			    			   			      			    		  			    			  			    		    		
      	end       
    end 
     
