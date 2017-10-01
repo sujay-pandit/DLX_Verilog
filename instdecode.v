@@ -307,12 +307,14 @@
 //----------------------------------------------BEQZ,BNEZ------------------------------------------------------	   	     			   			
 	     	else if((opcode==BEQZ)|(opcode==BNEZ))         
 	     		begin
-	     			aout2 <= regs[rs1];                                  //  regs[rs1]->A	     			
-		     		if(~imm16[15])     	          		                   //  imm16>0        
+	     			aout2 <= regs[rs1];
+	     			imout2<={16'b0000_0000_0000_0000,imm16};end
+                                                   //  regs[rs1]->A	     			
+		  /*   		if(~imm16[15])     	          		                   //  imm16>0        
         			imout2 <= {16'b0000_0000_0000_0000,imm16};          //  only extend to 32 bits	          		          				
 	          else            		                                 //  imm16<0
 	            imout2 <= {1'b1,(~{16'b0000_0000_0000_0000,imm16_15}+1)};  //  complemental code,and extend to 32 bits	     				               	     				
-	     	  end  
+	     	  end  */
 //-------------------------------------------------JALR--------------------------------------------------------	   	     			   			
 	     	else if(opcode==JALR)  
 	     		begin       	     		                                    
@@ -329,10 +331,11 @@
 //--------------------------------------------------J----------------------------------------------------------	   	     			   			
 	     	else if(opcode==J)  
 	     		begin	     	
-	     			if(~offset[25])      
-	     			  imout2 <= {6'b00_0000,offset[25:0]};                //  offset -> imout2
-	     			else
-	     				imout2 <= {1'b1,(~{6'b00_0000,offset[24:0]}+1)};    //  complemental code,and extend to 32 bits
+	     		    imout2<={6'b00_0000,offset[25:0]};
+	     			//if(~offset[25])      
+	     			 // imout2 <= {6'b00_0000,offset[25:0]};                //  offset -> imout2
+	     			//else
+	     				//imout2 <= {1'b1,(~{6'b00_0000,offset[24:0]}+1)};    //  complemental code,and extend to 32 bits
 	     	  end	 
 //-------------------------------------------------JAL---------------------------------------------------------	   	     			   			
 	     	else if(opcode==JAL)  

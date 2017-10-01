@@ -29,9 +29,11 @@ input clk_i;
     reg [31:0] inst_memory [0:63];
      initial
       begin
+      
+      
        $readmemb("testp.txt",inst_memory);
         $display("data:");           
-        for (i=0; i <5; i=i+1)         
+        for (i=0; i <10; i=i+1)         
          $display("%d:%b",i,inst_memory[i]); 
          end 
          always@(data_i)

@@ -1,6 +1,6 @@
 `timescale 1ns/100ps
 
- module instexec(ain3,bin3,imin3,inst_in3,npcout3,clock3,reset3,alu_out3,bout3,inst_out3,alu_branch_out,branch_en,mem_wr_en);
+ module instexec(ain3,bin3,imin3,inst_in3,npcout3,clock3,reset3,alu_out3,bout3,inst_out3,alu_branch_out,branch_en,mem_wr_en,jump_en);
  input [31:0] ain3;
  input [31:0] bin3;
  input [31:0] imin3;
@@ -15,11 +15,13 @@
  output [31:0] alu_branch_out;
  output branch_en;
  output mem_wr_en;
+ output jump_en;
  
  reg [31:0] alu_out3;
  reg [31:0] bout3;
  reg [31:0] inst_out3;
  reg branch_en;
+ reg jump_en;
  reg mem_wr_en;
  
  wire [31:0] alu_branch_out;
@@ -91,7 +93,8 @@
  assign func[5:0] = inst_in3[5:0]; 
  
  assign sum_a_imm = imin3 + ain3;
- assign sum_a_npc = imin3 + npcout3;
+ //assign sum_a_npc = imin3 + npcout3;
+ assign sum_a_npc=imin3;
  assign sum_a_b = ain3 + bin3;
  assign sra_a_imm = ain3 >> imin3[4:0];
  assign sra_a_b = ain3 >> bin3[4:0];
@@ -110,12 +113,16 @@
      	 end     	                 
      else
      	begin
+     	  if(branch_en==1)
+     	  branch_en<=0;
+     	
      		inst_out3 <= inst_in3;                      // IR3 -> IR4
      		//bout3 <= bin3;                              // B3 ->B4
      		if((opcode!=SB)&(opcode!=SH)&(opcode!=SW))
      		  mem_wr_en <= 0;
      		else if((opcode<BEQZ)|(opcode>RFE))
      			branch_en <= 1'b0;
+     			
 //------------------------------LB,LBU,LHU,LH,LW-----------------------------------
      		if((opcode==LB)|(opcode==LBU)|(opcode==LH)|(opcode==LHU)|(opcode==LW))
    			  begin
@@ -259,7 +266,7 @@
 //------------------------------------BEQZ----------------------------------------
      		else if(opcode==BEQZ)
    			  begin 
-   			  	if((~|ain3)&(~sum_a_npc[31]))  	  // ain3 == 0 and inst mem address should not be negative	
+   			  	if(ain3==0)  	  // ain3 == 0 and inst mem address should not be negative	
    			  		begin   			  			  	
    			  	    alu_out3 <= sum_a_npc;  
    			  	    branch_en <= 1'b1;  
@@ -267,12 +274,12 @@
    			  end 
 //------------------------------------BNEZ----------------------------------------
      		else if(opcode==BNEZ)
-   			  begin 
-   			  	if((|ain3)&(~sum_a_npc[31]))  	  // ain3 != 0 and inst mem address should not be negative	 
+   			  begin
+   			  		if(ain3!=0)
    			  		begin  			  			  	
    			  	    alu_out3 <= sum_a_npc; 
    			  	    branch_en <= 1'b1;  
-   			  	  end    			  	
+                    end    			  	
    			  end  
 //----------------------------------JR,JALR----------------------------------------
      		else if((opcode==JR)|(opcode==JALR))
@@ -284,12 +291,12 @@
    			  	  end			  	
    			  end   
 //-----------------------------------J,JAL-----------------------------------------
-     		else if((opcode==J)|(opcode==JAL))
+     		else if((opcode==J))//|(opcode==JAL))
    			  begin 
    			  	if(~sum_a_npc[31])  	                //  inst mem address should not be negative	 
    			  		begin  			  			  	
    			  	    alu_out3 <= sum_a_npc;  
-   			  	    branch_en <= 1'b1;   
+   			  	    jump_en <= 1'b1;   
    			  	  end	    			  	
    			  end
 //---------------------------------TRAP,RFE---------------------------------------
@@ -405,8 +412,10 @@
 		   			  	  alu_out3 <= 1;  
 		   			  	else
 		   			  		alu_out3 <= 0;                    
-		   			  end 		  	    		  	    	  	    	 			  	    			  	
-   			  end    			  			   			      			   			   			   			    			    			  			   			     			    			     			  			    			   			      			    		  			    			  			    		    		
+		   			  end 
+		   				  	    		  	    	  	    	 			  	    			  	
+   			  end
+   		    			  			   			      			   			   			   			    			    			  			   			     			    			     			  			    			   			      			    		  			    			  			    		    		
      	end       
    end 
     

@@ -22,7 +22,7 @@
 
 `timescale 1ns/100ps
 
- module instfetch(clock1,alu_branch_in,reset1,branch_en,inst_in1,irout1,npcout1);
+ module instfetch(clock1,alu_branch_in,reset1,branch_en,jump_en,inst_in1,irout1,npcout1);
 
  input clock1;
  input reset1;
@@ -31,22 +31,21 @@
  input [31:0] inst_in1;
  output [31:0] irout1;
  output [31:0] npcout1;
-
+ input jump_en;
  reg [31:0] pc;
  reg [31:0] instmem;
  reg [31:0] instreg;
- 
  wire [31:0] irout1;
  wire [31:0] npcout1;
  
- wire [31:0] inp1;
+ //wire [31:0] inp1;
  wire [31:0] outp;                                             
-
- assign inp1 = pc + 32'b0000_0000_0000_0000_0000_0000_0000_0001;     
+ reg [31:0] temp_pc;
+ integer  inp1;  
 // assign inp1 = pc + 32'b0000_0000_0000_0000_0000_0000_0000_0100;    //  a+b=s=inp1 ,b=4 (PC+4)
  
- assign outp = branch_en ? alu_branch_in : inp1;                             // mux2to1
- 
+// assign outp = branch_en ? alu_branch_in : inp1;                             // mux2to1
+ assign outp=alu_branch_in;
  assign irout1 = instreg;  // instruction output 
  integer counter;
  assign npcout1 = pc;       //  PC output
@@ -57,9 +56,10 @@
         begin
           counter <= 0;
           fetchclock<=1'b0;
+          inp1=0;
         end
         else begin
-          if(counter >= 5)begin
+          if(counter >=3)begin
                      counter <= 0;
                      fetchclock<=~fetchclock;
               end
@@ -71,16 +71,41 @@
 
  always@(posedge fetchclock or negedge reset1)
    begin
+    
      if(~reset1)
      	 begin
      	   instreg <= 32'b0000_0000_0000_0000_0000_0000_0000_0000; 
-     	   pc      <= 32'b0000_0000_0000_0000_0000_0000_0000_0000;     	       	   
+     	   pc      <= 32'b0000_0000_0000_0000_0000_0000_0000_0000; 
+     	   inp1=1;    	       	   
      	 end     	                 
      else
      	begin
      		instreg <= inst_in1;
-     		pc      <= outp;     	
+     		if (jump_en==1)
+     		begin
+     		 pc <= outp;
+     		end
+     		
+     		else if (branch_en==1)
+     		begin
+     		     /*if ((inst_in1[31:26]==6'b100001)||(inst_in1[31:26]==6'b100000))
+                 begin 
+                              inp1 <= outp;
+                              pc<=inp1;
+                 end
+     		     else
+     		     begin
+     		                  pc <= outp;
+     		     end */
+     		     inp1 <= outp;
+                pc<=inp1;
+     		        
+     		end
+     		else 
+     		begin     		     
+     		     pc <= inp1;
+     		     inp1=inp1+1;
+     		end	
      	end       
    end 
-    
  endmodule
