@@ -7,9 +7,9 @@
  
 `timescale 1ns/100ps 
  
- module dlxpipeline(clock,reset,pc,inst_in,memdata_in,memdata_out,mem_addr,mem_wr_en,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
+ module dlxpipeline(clock,reset,pc,inst_in,memdata_in,memdata_out,mem_addr,mem_en,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
                    ,regs11,regs12,regs13,regs14,regs15,regs16,regs17,regs18,regs19,regs20,regs21,regs22,regs23,regs24,regs25,
-                   regs26,regs27,regs28,regs29,regs30,regs31,branch_en,alu_branch,alu_out34,jump_en); 
+                   regs26,regs27,regs28,regs29,regs30,regs31,branch_en,alu_branch,alu_out34,jump_en,fetchclock,reg_add,reg_write_en,reg_data,imm); 
   
   input [31:0] inst_in; 
   input [31:0] memdata_in; 
@@ -18,7 +18,7 @@
   output [31:0] pc; 
   output [31:0] mem_addr; 
   output [31:0] memdata_out; 
-  output mem_wr_en; 
+  output mem_en; 
   output [31:0] regs1;
   output [31:0] regs2;
   output [31:0]regs3;
@@ -54,8 +54,13 @@
     output [31:0] alu_branch;
     output [31:0] alu_out34;
     output jump_en;
+    output fetchclock;
+    output reg_write_en;
+    output [31:0] reg_data;
+    output [4:0] reg_add;
+    output [31:0] imm;
   
- wire branch_en,reg_write_en,mem_wr_en,jump_en; 
+ wire branch_en,reg_write_en,mem_en,jump_en,fetchclock;
  wire [4:0]   reg_add; 
  wire [31:0]  pcout,ir12,npc12,ir23,npc23,ir34,ir45,mem_addr,memdata_out,loadmemdata; 
  wire [31:0]  alu_branch,reg_data,a23,b23,b34,im23,alu_out34,alu_out45; 
@@ -63,10 +68,11 @@
   assign pc = npc12;  // PC output     
   assign memdata_out = b34; 
   assign mem_addr= alu_out34;   
+  assign imm=im23;
   
 	instfetch instfetch(.clock1(clock),.alu_branch_in(alu_branch),.reset1(reset), 
 	 
-	                    .branch_en(branch_en),.inst_in1(inst_in),.irout1(ir12),.npcout1(npc12),.jump_en(jump_en)); 
+	                    .branch_en(branch_en),.inst_in1(inst_in),.irout1(ir12),.npcout1(npc12),.jump_en(jump_en),.fetchclock(fetchclock)); 
 	 
 	 
 	 
@@ -75,7 +81,7 @@
 	                       
 	instexec instexec(.ain3(a23),.bin3(b23),.imin3(im23),.inst_in3(ir23),.npcout3(npc23),.clock3(clock),.reset3(reset),.alu_out3(alu_out34), 
 	 
-	                  .bout3(b34),.inst_out3(ir34),.alu_branch_out(alu_branch),.branch_en(branch_en),.mem_wr_en(mem_wr_en),.jump_en(jump_en)); 
+	                  .bout3(b34),.inst_out3(ir34),.alu_branch_out(alu_branch),.branch_en(branch_en),.mem_en(mem_en),.jump_en(jump_en)); 
 	                   
 	                   
 	memaccess memaccess(.inst_in4(ir34),.readmemdata(memdata_in),.alu_in4(alu_out34),.bin4(b34),.clock4(clock),.reset4(reset), 

@@ -22,7 +22,7 @@
 
 `timescale 1ns/100ps
 
- module instfetch(clock1,alu_branch_in,reset1,branch_en,jump_en,inst_in1,irout1,npcout1);
+ module instfetch(clock1,alu_branch_in,reset1,branch_en,jump_en,inst_in1,irout1,npcout1,fetchclock);
 
  input clock1;
  input reset1;
@@ -32,6 +32,7 @@
  output [31:0] irout1;
  output [31:0] npcout1;
  input jump_en;
+ output fetchclock;
  reg [31:0] pc;
  reg [31:0] instmem;
  reg [31:0] instreg;
@@ -88,15 +89,6 @@
      		
      		else if (branch_en==1)
      		begin
-     		     /*if ((inst_in1[31:26]==6'b100001)||(inst_in1[31:26]==6'b100000))
-                 begin 
-                              inp1 <= outp;
-                              pc<=inp1;
-                 end
-     		     else
-     		     begin
-     		                  pc <= outp;
-     		     end */
      		     inp1 <= outp;
                 pc<=inp1;
      		        

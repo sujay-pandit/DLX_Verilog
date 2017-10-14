@@ -52,8 +52,13 @@
      else
      	begin
      	  ir5out <= inst_in5;               // IR5->IR6   
-     	  memout <= loadmemdata_in;  
-     	  aluout <=	alu_in5;     
+     	  memout <= loadmemdata_in;
+     	  if(opcode==LW)
+     	  begin
+     	      memout<=alu_in5;
+     	  end  
+     	  aluout <=	alu_in5;   
+     	  
       end
    end 
     

@@ -13,7 +13,7 @@ module RAM_BLOCK (
     input reset;
 	input [31:0] adr_i;
 	input [31:0] data_i;
-	output [31:0] data_o;
+	output reg [31:0] data_o;
 	input clk_i;
 	input we_i;
 	output reg [31:0] mem_addr_in_use;
@@ -22,11 +22,11 @@ module RAM_BLOCK (
   
 	//reg [31:0] memory[2**31:0];
 	
-	reg [31:0] memory[0:65535];
+	reg [31:0] memory[0:63];
 	integer i;
 	
 	
-	assign data_o = memory[adr_i];
+	//assign data_o = memory[adr_i];
 	always @ (posedge clk_i)
 	begin
 	   mem_addr_in_use <= adr_i;
@@ -34,7 +34,8 @@ module RAM_BLOCK (
 	  
 		if (we_i==1'b1)
 		begin
-			memory[adr_i] <= data_i;     // ??????????
+			memory[adr_i] <= data_i;     // ?????????
+			data_o <= memory[adr_i];
 		end
 	end
 	always @(posedge reset)
