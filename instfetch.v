@@ -22,7 +22,7 @@
 
 `timescale 1ns/100ps
 
- module instfetch(clock1,alu_branch_in,reset1,branch_en,inst_in1,irout1,npcout1);
+ module instfetch(clock1,alu_branch_in,reset1,branch_en,jump_en,inst_in1,irout1,npcout1,fetchclock);
 
  input clock1;
  input reset1;
@@ -31,56 +31,93 @@
  input [31:0] inst_in1;
  output [31:0] irout1;
  output [31:0] npcout1;
-
+ input jump_en;
+ output fetchclock;
  reg [31:0] pc;
  reg [31:0] instmem;
  reg [31:0] instreg;
- 
  wire [31:0] irout1;
  wire [31:0] npcout1;
  
- wire [31:0] inp1;
+ //wire [31:0] inp1;
  wire [31:0] outp;                                             
-
- assign inp1 = pc + 32'b0000_0000_0000_0000_0000_0000_0000_0001;     
+ reg [31:0] temp_pc;
+ reg [31:0] inp1;
+ //integer  inp1;  
 // assign inp1 = pc + 32'b0000_0000_0000_0000_0000_0000_0000_0100;    //  a+b=s=inp1 ,b=4 (PC+4)
  
- assign outp = branch_en ? alu_branch_in : inp1;                             // mux2to1
- 
+// assign outp = branch_en ? alu_branch_in : inp1;                             // mux2to1
+ assign outp=alu_branch_in;
  assign irout1 = instreg;  // instruction output 
  integer counter;
  assign npcout1 = pc;       //  PC output
  reg fetchclock;
- always @ (posedge clock1)
+ always@(posedge clock1 or negedge reset1)
  begin
         if(~reset1)
         begin
           counter <= 0;
           fetchclock<=1'b0;
+          pc      <= 32'b0000_0000_0000_0000_0000_0000_0000_0000;
+          inp1=     32'b00000000000000000000000000000000;
         end
         else begin
-          if(counter >= 5)begin
-                     counter <= 0;
-                     fetchclock<=~fetchclock;
+          if(counter >=3)begin
+                     counter = 0;
+                     //fetchclock<=~fetchclock;
+                     if (jump_en==1)
+                                  begin
+                                   pc <= outp;
+                                  end
+                                  
+                      else if (branch_en==1)
+                                  begin
+                                       inp1 <= outp;
+                                     pc<=inp1;
+                                          
+                                  end
+                                  else 
+                                  begin                  
+                                       pc <= inp1;
+                                       inp1=inp1+1;
+                                  end    
+                                  instreg <= inst_in1;
               end
-              else begin
-                     counter <= counter + 1;
+          else begin
+                     counter = counter + 1;
               end
         end
   end
 
- always@(posedge fetchclock or negedge reset1)
-   begin
-     if(~reset1)
+ //always@(posedge fetchclock)// or negedge reset1)
+   //begin
+    
+     /*if(~reset1)
      	 begin
      	   instreg <= 32'b0000_0000_0000_0000_0000_0000_0000_0000; 
-     	   pc      <= 32'b0000_0000_0000_0000_0000_0000_0000_0000;     	       	   
+     	   //pc      <= 32'b0000_0000_0000_0000_0000_0000_0000_0000; 
+     	   //inp1=0;    	       	   
      	 end     	                 
      else
-     	begin
-     		instreg <= inst_in1;
-     		pc      <= outp;     	
-     	end       
-   end 
-    
+     	begin*/
+     		
+     	/*	if (jump_en==1)
+     		begin
+     		 pc <= outp;
+     		end
+     		
+     		else if (branch_en==1)
+     		begin
+     		     inp1 <= outp;
+                pc<=inp1;
+     		        
+     		end
+     		else 
+     		begin     		     
+     		     pc <= inp1;
+     		     inp1=inp1+1;
+     		end	
+     		instreg <= inst_in1;*/
+  //	end       
+  // end 
  endmodule
