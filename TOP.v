@@ -23,7 +23,7 @@
 module TOP(clock_i,reset_i,regs);
 input clock_i;
 input reset_i;
-output [1:0]regs;
+output [6:0]regs;
 
     wire clock_i;
     wire reset_i;
