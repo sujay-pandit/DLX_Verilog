@@ -52,7 +52,7 @@ def Asm2Mach(line):
   
    
  #For I-type instructions
- if line[0]=='addi' or line[0]=='subi'or line[0]=='sw'or line[0]=='lw' or line[0]=='slti' or line[0]=='bnez' or line[0]=='beqz' or line[0]=='bnez' or line[0]=="slti" or line[0]=="beqz" or line[0]=="andi"or line[0]=="ori" or line[0]=="xori" or line[0]=="sgti" or line[0]=="sgei" or line[0]=="seqi" or line[0]=="slei" or line[0]=="snei": 
+ if line[0]=='addi' or line[0]=='subi'or line[0]=='sw'or line[0]=='lw' or line[0]=='slti' or line[0]=='bnez' or line[0]=='beqz' or line[0]=="slti" or line[0]=="andi"or line[0]=="ori" or line[0]=="xori" or line[0]=="sgti" or line[0]=="sgei" or line[0]=="seqi" or line[0]=="slei" or line[0]=="snei": 
   line[1]=line[1].split('r')  
   line[2]=line[2].split('r')
   regs='{0:05b}'.format(int(line[1][1]))
@@ -66,7 +66,7 @@ def Asm2Mach(line):
   inst=opcode+str(offset)
 
  #For R-type instructions 
- if line[0]=='add' or line[0]=='sub' or line[0]=='and' or line[0]=='or' or line[0]=='xor' or line[0]=='slt' or line[0]=='sgt' or line[0]=='sle' or line[0]=='sge' or line[0]=='seq' or line[0]=='sne':   :
+ if line[0]=='add' or line[0]=='sub' or line[0]=='and' or line[0]=='or' or line[0]=='xor' or line[0]=='slt' or line[0]=='sgt' or line[0]=='sle' or line[0]=='sge' or line[0]=='seq' or line[0]=='sne':   
   line[1]=line[1].split('r')  
   line[2]=line[2].split('r')
   line[3]=line[3].split('r')
@@ -74,6 +74,9 @@ def Asm2Mach(line):
   regs2='{0:05b}'.format(int(line[2][1]))
   regd1='{0:05b}'.format(int(line[3][1]))
   inst=opcode+str(regs1)+str(regs2)+str(regd1)+funccode
+  
+ if line[0]=='':
+  inst=' '
 
  return inst
 
@@ -84,6 +87,7 @@ for line in rfile:
  print line
  line=line.strip('\n')
  line=line.split(' ')
+ print line 
  inst1=Asm2Mach(line)
  if inst1:
   print inst1 
