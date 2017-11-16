@@ -5,6 +5,7 @@ module test;
 reg clock_i;
 reg reset_i;
 wire [31:0] inst_i;
+wire [31:0] regs0;
 wire [31:0] regs1;
 wire [31:0] regs2;
 wire [31:0] regs3;
@@ -55,7 +56,7 @@ wire [31:0] imm;
 
 dlxpipeline lzy(.clock(clock_i),.reset(reset_i),.pc(pc_o),.inst_in(inst_i),.memdata_in(mdata_i),
 
-                .memdata_out(mdata_o),.mem_addr(mem_addr_o),.mem_en(mem_en_o),.regs1(regs1),.regs2(regs2),.regs3(regs3),.regs4(regs4),.regs5(regs5),.regs6(regs6),.regs7(regs7),.regs8(regs8),
+                .memdata_out(mdata_o),.mem_addr(mem_addr_o),.mem_en(mem_en_o),.regs0(regs0),.regs1(regs1),.regs2(regs2),.regs3(regs3),.regs4(regs4),.regs5(regs5),.regs6(regs6),.regs7(regs7),.regs8(regs8),
                         .regs9(regs9),.regs10(regs10)
                         ,.regs11(regs11),.regs12(regs12),.regs13(regs13),.regs14(regs14),.regs15(regs15),.regs16(regs16),.regs17(regs17),.regs18(regs18),
                         .regs19(regs19),.regs20(regs20)
