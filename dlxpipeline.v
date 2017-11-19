@@ -7,7 +7,7 @@
  
 `timescale 1ns/100ps 
  
- module dlxpipeline(clock,reset,pc,inst_in,memdata_in,memdata_out,mem_addr,mem_en,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
+ module dlxpipeline(clock,reset,pc,inst_in,memdata_in,memdata_out,mem_addr,mem_en,regs0,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
                    ,regs11,regs12,regs13,regs14,regs15,regs16,regs17,regs18,regs19,regs20,regs21,regs22,regs23,regs24,regs25,
                    regs26,regs27,regs28,regs29,regs30,regs31,branch_en,alu_branch,alu_out34,jump_en,fetchclock,reg_add,reg_write_en,reg_data,imm); 
   
@@ -19,6 +19,7 @@
   output [31:0] mem_addr; 
   output [31:0] memdata_out; 
   output mem_en; 
+  output [31:0] regs0;
   output [31:0] regs1;
   output [31:0] regs2;
   output [31:0]regs3;
@@ -77,7 +78,7 @@
 	 
 	 
 	 
-	instdecode instdecode(.npc_in2(npc12),.inst_in2(ir12),.clock2(clock),.reg_add_in(reg_add),.reg_data_in(reg_data),.reset2(reset),.reg_write_en(reg_write_en),.irout2(ir23),.aout2(a23),.bout2(b23),.imout2(im23),.npcout2(npc23),.regs1(regs1),.regs2(regs2),.regs3(regs3),.regs4(regs4),.regs5(regs5),.regs6(regs6),.regs7(regs7),.regs8(regs8),.regs9(regs9),.regs10(regs10),.regs11(regs11),.regs12(regs12),.regs13(regs13),.regs14(regs14),.regs15(regs15),.regs16(regs16),.regs17(regs17),.regs18(regs18),.regs19(regs19),.regs20(regs20),.regs21(regs21),.regs22(regs22),.regs23(regs23),.regs24(regs24),.regs25(regs25),.regs26(regs26),.regs27(regs27),.regs28(regs28),.regs29(regs29),.regs30(regs30),.regs31(regs31)); 
+	instdecode instdecode(.npc_in2(npc12),.inst_in2(ir12),.clock2(clock),.reg_add_in(reg_add),.reg_data_in(reg_data),.reset2(reset),.reg_write_en(reg_write_en),.irout2(ir23),.aout2(a23),.bout2(b23),.imout2(im23),.npcout2(npc23),.regs0(regs0),.regs1(regs1),.regs2(regs2),.regs3(regs3),.regs4(regs4),.regs5(regs5),.regs6(regs6),.regs7(regs7),.regs8(regs8),.regs9(regs9),.regs10(regs10),.regs11(regs11),.regs12(regs12),.regs13(regs13),.regs14(regs14),.regs15(regs15),.regs16(regs16),.regs17(regs17),.regs18(regs18),.regs19(regs19),.regs20(regs20),.regs21(regs21),.regs22(regs22),.regs23(regs23),.regs24(regs24),.regs25(regs25),.regs26(regs26),.regs27(regs27),.regs28(regs28),.regs29(regs29),.regs30(regs30),.regs31(regs31)); 
                          
 	                       
 	instexec instexec(.ain3(a23),.bin3(b23),.imin3(im23),.inst_in3(ir23),.clock3(clock),.reset3(reset),.alu_out3(alu_out34), 

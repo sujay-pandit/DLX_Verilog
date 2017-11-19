@@ -2,7 +2,7 @@
 
  module instdecode(npc_in2,inst_in2,clock2,reg_add_in,reg_data_in,reset2,
                   
-                   reg_write_en,irout2,aout2,bout2,imout2,npcout2,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
+                   reg_write_en,irout2,aout2,bout2,imout2,npcout2,regs0,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
                    ,regs11,regs12,regs13,regs14,regs15,regs16,regs17,regs18,regs19,regs20,regs21,regs22,regs23,regs24,regs25,
                    regs26,regs27,regs28,regs29,regs30,regs31);
  
@@ -11,6 +11,7 @@
  input reg_write_en;
  input clock2;
  input reset2;
+ output reg [31:0]regs0;
  output reg [31:0]regs1;
  output reg [31:0]regs2;
  output reg [31:0]regs3;
@@ -48,7 +49,7 @@
  output [31:0] aout2,bout2,irout2,imout2,npcout2;
  
  reg [31:0] aout2,bout2,irout2,imout2,npcout2;
- reg [31:0] regs[31:1];    // R1~R31,32bit
+ reg [31:0] regs[31:0];    // R1~R31,32bit
  
  //wire [31:0] imm16_32_cpl,imm16_32_sg,imm16_32_ug;
  wire [25:0] offset;
@@ -120,7 +121,7 @@
 					irout2<= 0;
 					imout2<= 0;
 					npcout2<= 0;					
-     	   // regs[0]<= 0;
+     	    regs[0]<= 0;
      	    regs[1]<= 0; 
      	    regs[2]<= 0; 
      	    regs[3]<= 0; 
@@ -155,6 +156,7 @@
      	 end     	                 
      else
      	 begin     		
+     	    regs0 <=regs[0];
      	    regs1 <= regs[1]; 
             regs2 <= regs[2]; 
             regs3 <= regs[3]; 

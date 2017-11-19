@@ -24,7 +24,7 @@ module TEST_TOP;
 
 reg clock_i;
 reg reset_i;
-wire [1:0] regs;
+wire [13:0] regs;
 /*
 wire [31:0] inst_i;
 wire [31:0] regs1;

@@ -20,14 +20,19 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module TOP(clock_i,reset_i,regs);
-input clock_i;
+module TOP(clock,reset_i,regs);
+input clock;
 input reset_i;
-output [6:0]regs;
+output [13:0]regs;
+//output [4:0]segs;
 
-    wire clock_i;
+ 
+
+    reg clock_i=1'b0;
     wire reset_i;
+  //  wire [4:0]segs;
     wire [31:0] inst_i;
+    wire [31:0] regs0;
     wire [31:0] regs1;
     wire [31:0] regs2;
     wire [31:0] regs3;
@@ -76,9 +81,21 @@ output [6:0]regs;
     wire reg_write_en;
     wire [31:0] imm;
     assign regs=regs3;
+    //assign segs=
+    integer counter;
+    always@(posedge clock)
+    begin
+      //  counter=counter+1;
+       // if(counter==4500000)
+       // begin
+        clock_i=~clock_i;
+       // counter=0;
+       //end
+    end
+   
     dlxpipeline lzy(.clock(clock_i),.reset(reset_i),.pc(pc_o),.inst_in(inst_i),.memdata_in(mdata_i),
     
-                    .memdata_out(mdata_o),.mem_addr(mem_addr_o),.mem_en(mem_en_o),.regs1(regs1),.regs2(regs2),.regs3(regs3),.regs4(regs4),.regs5(regs5),.regs6(regs6),.regs7(regs7),.regs8(regs8),
+                    .memdata_out(mdata_o),.mem_addr(mem_addr_o),.mem_en(mem_en_o),.regs0(regs0),.regs1(regs1),.regs2(regs2),.regs3(regs3),.regs4(regs4),.regs5(regs5),.regs6(regs6),.regs7(regs7),.regs8(regs8),
                             .regs9(regs9),.regs10(regs10)
                             ,.regs11(regs11),.regs12(regs12),.regs13(regs13),.regs14(regs14),.regs15(regs15),.regs16(regs16),.regs17(regs17),.regs18(regs18),
                             .regs19(regs19),.regs20(regs20)

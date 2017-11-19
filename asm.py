@@ -92,4 +92,3 @@ for line in rfile:
  if inst1:
   print inst1 
   wfile.write(inst1+"\n");  
- 
