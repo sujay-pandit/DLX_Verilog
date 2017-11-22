@@ -9,12 +9,13 @@
  
  module dlxpipeline(clock,reset,pc,inst_in,memdata_in,memdata_out,mem_addr,mem_en,regs0,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
                    ,regs11,regs12,regs13,regs14,regs15,regs16,regs17,regs18,regs19,regs20,regs21,regs22,regs23,regs24,regs25,
-                   regs26,regs27,regs28,regs29,regs30,regs31,branch_en,alu_branch,alu_out34,jump_en,fetchclock,reg_add,reg_write_en,reg_data,imm); 
+                   regs26,regs27,regs28,regs29,regs30,regs31,branch_en,alu_branch,alu_out34,jump_en,fetchclock,reg_add,reg_write_en,reg_data,imm,string_en); 
   
   input [31:0] inst_in; 
   input [31:0] memdata_in; 
   input clock; 
   input reset; 
+  output string_en;
   output [31:0] pc; 
   output [31:0] mem_addr; 
   output [31:0] memdata_out; 
@@ -61,7 +62,7 @@
     output [4:0] reg_add;
     output [31:0] imm;
   
- wire branch_en,reg_write_en,mem_en,jump_en,fetchclock;
+ wire branch_en,reg_write_en,mem_en,jump_en,fetchclock,string_en;
  wire [4:0]   reg_add; 
  wire [31:0]  pcout,ir12,npc12,ir23,npc23,ir34,ir45,mem_addr,memdata_out,loadmemdata; 
  wire [31:0]  alu_branch,reg_data,a23,b23,b34,im23,alu_out34,alu_out45; 
@@ -78,7 +79,7 @@
 	 
 	 
 	 
-	instdecode instdecode(.npc_in2(npc12),.inst_in2(ir12),.clock2(clock),.reg_add_in(reg_add),.reg_data_in(reg_data),.reset2(reset),.reg_write_en(reg_write_en),.irout2(ir23),.aout2(a23),.bout2(b23),.imout2(im23),.npcout2(npc23),.regs0(regs0),.regs1(regs1),.regs2(regs2),.regs3(regs3),.regs4(regs4),.regs5(regs5),.regs6(regs6),.regs7(regs7),.regs8(regs8),.regs9(regs9),.regs10(regs10),.regs11(regs11),.regs12(regs12),.regs13(regs13),.regs14(regs14),.regs15(regs15),.regs16(regs16),.regs17(regs17),.regs18(regs18),.regs19(regs19),.regs20(regs20),.regs21(regs21),.regs22(regs22),.regs23(regs23),.regs24(regs24),.regs25(regs25),.regs26(regs26),.regs27(regs27),.regs28(regs28),.regs29(regs29),.regs30(regs30),.regs31(regs31)); 
+	instdecode instdecode(.npc_in2(npc12),.inst_in2(ir12),.clock2(clock),.reg_add_in(reg_add),.reg_data_in(reg_data),.reset2(reset),.reg_write_en(reg_write_en),.irout2(ir23),.aout2(a23),.bout2(b23),.imout2(im23),.npcout2(npc23),.regs0(regs0),.regs1(regs1),.regs2(regs2),.regs3(regs3),.regs4(regs4),.regs5(regs5),.regs6(regs6),.regs7(regs7),.regs8(regs8),.regs9(regs9),.regs10(regs10),.regs11(regs11),.regs12(regs12),.regs13(regs13),.regs14(regs14),.regs15(regs15),.regs16(regs16),.regs17(regs17),.regs18(regs18),.regs19(regs19),.regs20(regs20),.regs21(regs21),.regs22(regs22),.regs23(regs23),.regs24(regs24),.regs25(regs25),.regs26(regs26),.regs27(regs27),.regs28(regs28),.regs29(regs29),.regs30(regs30),.regs31(regs31),.string_en(string_en)); 
                          
 	                       
 	instexec instexec(.ain3(a23),.bin3(b23),.imin3(im23),.inst_in3(ir23),.clock3(clock),.reset3(reset),.alu_out3(alu_out34), 

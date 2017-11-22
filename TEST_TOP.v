@@ -25,6 +25,7 @@ module TEST_TOP;
 reg clock_i;
 reg reset_i;
 wire [13:0] regs;
+wire [7:0] strings;
 /*
 wire [31:0] inst_i;
 wire [31:0] regs1;
@@ -89,7 +90,7 @@ RAM_BLOCK ram(.adr_i(mem_addr_o),.clk_i(clock_i),.we_i(mem_en_o),.data_i(mdata_o
                                 .mem_addr_in_use_value(mem_addr_in_use_value));
 
 ROM_BLOCK rom(.data_i(pc_o),.data_o(inst_i),.clk_i(clock_i)); */
-TOP top(.clock_i(clock_i),.reset_i(reset_i),.regs(regs));
+TOP top(.clock_i(clock_i),.reset_i(reset_i),.regs(regs),.strings(strings));
  initial
      begin
          clock_i = 1'b1;

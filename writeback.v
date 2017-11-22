@@ -26,9 +26,9 @@
 
  parameter  LB		  =6'b000001,
             LW		  =6'b000101,
-            ADDI		=6'b010000,
-            SNEI		=6'b011111,
-            R_TYPE  =6'b110000;
+            ADDI	  =6'b010000,
+            SNEI	  =6'b011111,
+            R_TYPE    =6'b110000;
  
  assign opcode[5:0] = ir5out[31:26];
  

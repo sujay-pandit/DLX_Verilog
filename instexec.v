@@ -49,6 +49,7 @@
 						BEQZ		=6'b100000,
 						BNEZ		=6'b100001,
 						J		    =6'b100100,
+				//		STRING      =6'b111111,
 						R_TYPE  =6'b110000;
 //---------------------------------function code-------------------------------------					
  parameter	ADD		  =6'b000001,
@@ -103,7 +104,13 @@
    			  	  alu_out3 <= sum_a_imm;        //  mem address  (should not be negative)   
    			  	  mem_en<=1;			  	    
    			  end  
-
+//
+/*------------------------------STRING-----------------------------------
+                              if((opcode==STRING))
+                                  begin
+                                        alu_out3 <= sum_a_imm;        //  mem address  (should not be negative)                       
+                                  end  
+*/
 
 //-------------------------------------SW------------------------------------------
      		else if(opcode==SW)

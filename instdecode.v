@@ -4,13 +4,14 @@
                   
                    reg_write_en,irout2,aout2,bout2,imout2,npcout2,regs0,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
                    ,regs11,regs12,regs13,regs14,regs15,regs16,regs17,regs18,regs19,regs20,regs21,regs22,regs23,regs24,regs25,
-                   regs26,regs27,regs28,regs29,regs30,regs31);
+                   regs26,regs27,regs28,regs29,regs30,regs31,string_en);
  
  input [31:0] npc_in2,inst_in2,reg_data_in;
  input [4:0] reg_add_in;
  input reg_write_en;
  input clock2;
  input reset2;
+ output reg string_en;
  output reg [31:0]regs0;
  output reg [31:0]regs1;
  output reg [31:0]regs2;
@@ -77,6 +78,7 @@
 						BEQZ		=6'b100000,
 						BNEZ		=6'b100001,
 						J		    =6'b100100,
+						STRING      =6'b111111,
 						R_TYPE  =6'b110000;
 //---------------------------------function code-------------------------------------					
  parameter	ADD		  =6'b000001,
@@ -120,7 +122,8 @@
 					bout2<= 0;
 					irout2<= 0;
 					imout2<= 0;
-					npcout2<= 0;					
+					npcout2<= 0;
+					string_en<=0;					
      	    regs[0]<= 0;
      	    regs[1]<= 0; 
      	    regs[2]<= 0; 
@@ -191,8 +194,13 @@
      	       		 		
      		irout2 <= inst_in2;                                           // IR2 -> IR3
      		npcout2 <= npc_in2;                                           //  NPC2 -> NPC3  
-     		if((|reg_add_in)&(reg_write_en))                              // reg_add_in!=0
-     			regs[reg_add_in] <= reg_data_in;                            // write back the data                            
+     		if((|reg_add_in)&(reg_write_en))      
+     		begin                        // reg_add_in!=0
+     		  //  if(opcode!=STRING)
+     		   // begin
+     			regs[reg_add_in] <= reg_data_in;                            // write back the data 
+     		//	end    
+     		end                       
 //-----------------------------------------LW,ADDI,SLTI,SGEI,SEQI,SLEI,SNEI-----------------------------------
      		if((opcode==LW)|(opcode==ADDI)|((opcode>=SLTI)&(opcode<=SNEI))) 	               
           begin            	
@@ -213,6 +221,12 @@
 	        				aout2 <= ~regs[rs1]+1;                          //  complemental code    
 	        		end  				               	     				
      			end   
+//---------------------------------------------STRING---------------------------------------------------------------
+     	else if(opcode==STRING)
+     	begin
+     	  regs29<={24'b0000_0000_0000_0000_0000_0000,inst_in2[7:0]};
+     	  string_en<=1'b1;
+     	end
 //-------------------------------------------------SUBI-------------------------------------------------------------     			
         else if(opcode==SUBI)	               
           begin            	
@@ -321,7 +335,7 @@
 			          		end
 			          	else            		                                  
 			              bout2 <= {1'b1,~regs[rd_rs2][30:0]+1};               //  complemental code  
-	     		  		end 
+	     		  		end
 
 //----------------------------------------SLT,SGT,SLE,SGE,SEQ,SNE-----------------------------------------------	   	     			   			
             else if((func==SLT)|(func==SGT)|(func==SLE)|(func==SGE)|(func==SEQ)|(func==SNE)) 

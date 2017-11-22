@@ -20,11 +20,11 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module TOP(clock,reset_i,regs);
+module TOP(clock,reset_i,regs,strings);
 input clock;
 input reset_i;
 output [13:0]regs;
-//output [4:0]segs;
+output [7:0]strings;
 
  
 
@@ -80,17 +80,20 @@ output [13:0]regs;
     wire [31:0] reg_data;
     wire reg_write_en;
     wire [31:0] imm;
+    wire string_en;
+    wire [7:0] strings;
     assign regs=regs3;
+    assign strings=regs29;
     //assign segs=
     integer counter;
     always@(posedge clock)
     begin
-      //  counter=counter+1;
-       // if(counter==4500000)
-       // begin
+        counter=counter+1;
+        if(counter==9000000)
+        begin
         clock_i=~clock_i;
-       // counter=0;
-       //end
+        counter=0;
+       end
     end
    
     dlxpipeline lzy(.clock(clock_i),.reset(reset_i),.pc(pc_o),.inst_in(inst_i),.memdata_in(mdata_i),
@@ -100,7 +103,7 @@ output [13:0]regs;
                             ,.regs11(regs11),.regs12(regs12),.regs13(regs13),.regs14(regs14),.regs15(regs15),.regs16(regs16),.regs17(regs17),.regs18(regs18),
                             .regs19(regs19),.regs20(regs20)
                             ,.regs21(regs21),.regs22(regs22),.regs23(regs23),.regs24(regs24),.regs25(regs25),.regs26(regs26),.regs27(regs27),.regs28(regs28),
-                             .regs29(regs29),.regs30(regs30),.regs31(regs31),.branch_en(branch_en),.alu_branch(alu_branch),.alu_out34(alu_out34),.jump_en(jump_en),.fetchclock(fetchclock),.reg_add(reg_add),.reg_data(reg_data),.reg_write_en(reg_write_en),.imm(imm));
+                             .regs29(regs29),.regs30(regs30),.regs31(regs31),.branch_en(branch_en),.alu_branch(alu_branch),.alu_out34(alu_out34),.jump_en(jump_en),.fetchclock(fetchclock),.reg_add(reg_add),.reg_data(reg_data),.reg_write_en(reg_write_en),.imm(imm),.string_en(string_en));
                          
     RAM_BLOCK ram(.adr_i(mem_addr_o),.clk_i(clock_i),.we_i(mem_en_o),.data_i(mdata_o),.data_o(mdata_i),.mem_addr_in_use(mem_addr_in_use),
                                     .mem_addr_in_use_value(mem_addr_in_use_value));
