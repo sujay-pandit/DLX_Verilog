@@ -2,15 +2,17 @@
 
  module instdecode(npc_in2,inst_in2,clock2,reg_add_in,reg_data_in,reset2,
                   
-                   reg_write_en,irout2,aout2,bout2,imout2,npcout2,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
+                   reg_write_en,irout2,aout2,bout2,imout2,npcout2,regs0,regs1,regs2,regs3,regs4,regs5,regs6,regs7,regs8,regs9,regs10
                    ,regs11,regs12,regs13,regs14,regs15,regs16,regs17,regs18,regs19,regs20,regs21,regs22,regs23,regs24,regs25,
-                   regs26,regs27,regs28,regs29,regs30,regs31);
+                   regs26,regs27,regs28,regs29,regs30,regs31,string_en);
  
  input [31:0] npc_in2,inst_in2,reg_data_in;
  input [4:0] reg_add_in;
  input reg_write_en;
  input clock2;
  input reset2;
+ output reg string_en;
+ output reg [31:0]regs0;
  output reg [31:0]regs1;
  output reg [31:0]regs2;
  output reg [31:0]regs3;
@@ -48,7 +50,7 @@
  output [31:0] aout2,bout2,irout2,imout2,npcout2;
  
  reg [31:0] aout2,bout2,irout2,imout2,npcout2;
- reg [31:0] regs[31:1];    // R1~R31,32bit
+ reg [31:0] regs[31:0];    // R1~R31,32bit
  
  //wire [31:0] imm16_32_cpl,imm16_32_sg,imm16_32_ug;
  wire [25:0] offset;
@@ -59,25 +61,14 @@
  
  
  //---------------------------------operation code-------------------------------------	
- parameter	LB		  =6'b000001,
-						LBU		  =6'b000010,
-						LH		  =6'b000011,
-						LHU		  =6'b000100,
-						LW		  =6'b000101,
-						SB		  =6'b001000,
-						SH		  =6'b001001,
+ parameter	
+						LW		  =6'b00010,
 						SW		  =6'b001010,
 						ADDI		=6'b010000,
-						ADDUI		=6'b010001,
 						SUBI		=6'b010010,
-						SUBUI		=6'b010011,
 						ANDI		=6'b010100,
 						ORI		  =6'b010101,
 						XORI		=6'b010110,
-						LHI		  =6'b000110,
-						SLLI		=6'b010111,
-						SRLI		=6'b011000,
-						SRAI		=6'b011001,
 						SLTI		=6'b011010,
 						SGTI		=6'b011011,
 						SGEI		=6'b011100,
@@ -86,25 +77,15 @@
 						SNEI		=6'b011111,
 						BEQZ		=6'b100000,
 						BNEZ		=6'b100001,
-						JR		  =6'b100010,
-						JALR		=6'b100011,
 						J		    =6'b100100,
-						JAL		  =6'b100101,
-						TRAP		=6'b100110,
-						RFE		  =6'b100111,
-						NOP     =6'b000000,
+						STRING      =6'b111111,
 						R_TYPE  =6'b110000;
 //---------------------------------function code-------------------------------------					
  parameter	ADD		  =6'b000001,
-						ADDU	  =6'b000010,
 						SUB			=6'b000011,
-						SUBU		=6'b000100,
 						AND_ 		=6'b000101,
 						OR_  		=6'b000110,
 						XOR_ 		=6'b000111,
-						SLL 		=6'b001000,
-						SRL			=6'b001001,
-						SRA			=6'b001010,
 						SLT			=6'b001011,
 						SGT			=6'b001100,
 						SLE			=6'b001101,
@@ -141,8 +122,9 @@
 					bout2<= 0;
 					irout2<= 0;
 					imout2<= 0;
-					npcout2<= 0;					
-     	   // regs[0]<= 0;
+					npcout2<= 0;
+					string_en<=0;					
+     	    regs[0]<= 0;
      	    regs[1]<= 0; 
      	    regs[2]<= 0; 
      	    regs[3]<= 0; 
@@ -177,6 +159,7 @@
      	 end     	                 
      else
      	 begin     		
+     	    regs0 <=regs[0];
      	    regs1 <= regs[1]; 
             regs2 <= regs[2]; 
             regs3 <= regs[3]; 
@@ -211,10 +194,15 @@
      	       		 		
      		irout2 <= inst_in2;                                           // IR2 -> IR3
      		npcout2 <= npc_in2;                                           //  NPC2 -> NPC3  
-     		if((|reg_add_in)&(reg_write_en))                              // reg_add_in!=0
-     			regs[reg_add_in] <= reg_data_in;                            // write back the data                            
-//-----------------------------------------LB,LH,LW,ADDI,SLTI,SGEI,SEQI,SLEI,SNEI-----------------------------------
-     		if((opcode==LB)|(opcode==LH)|(opcode==LW)|(opcode==ADDI)|((opcode>=SLTI)&(opcode<=SNEI))) 	               
+     		if((|reg_add_in)&(reg_write_en))      
+     		begin                        // reg_add_in!=0
+     		  //  if(opcode!=STRING)
+     		   // begin
+     			regs[reg_add_in] <= reg_data_in;                            // write back the data 
+     		//	end    
+     		end                       
+//-----------------------------------------LW,ADDI,SLTI,SGEI,SEQI,SLEI,SNEI-----------------------------------
+     		if((opcode==LW)|(opcode==ADDI)|((opcode>=SLTI)&(opcode<=SNEI))) 	               
           begin            	
           	if(~imm16[15])                                     /// imm16>0
           		begin
@@ -233,12 +221,12 @@
 	        				aout2 <= ~regs[rs1]+1;                          //  complemental code    
 	        		end  				               	     				
      			end   
-//------------------------------------------LBU,LHU-----------------------------------------------------------------
-        else if((opcode==LBU)|(opcode==LHU))              		  
-  				begin
-  					aout2 <= regs[rs1];                          //  they are unsigned,regs[rs1]->A
-  					imout2 <= {16'b0000_0000_0000_0000,imm16};    //  16 bit immediate extend to 32 bits
-  				end
+//---------------------------------------------STRING---------------------------------------------------------------
+     	else if(opcode==STRING)
+     	begin
+     	  regs29<={24'b0000_0000_0000_0000_0000_0000,inst_in2[7:0]};
+     	  string_en<=1'b1;
+     	end
 //-------------------------------------------------SUBI-------------------------------------------------------------     			
         else if(opcode==SUBI)	               
           begin            	
@@ -259,8 +247,8 @@
           				aout2 <= {1'b1,~regs[rs1][30:0]+1};           //  complemental code   
               end    				               	     				
      			end       			
-//------------------------------------SB,SH,SW--------------------------------------------------------------	     			
-	     	else if((opcode==SB)|(opcode==SH)|(opcode==SW))         
+//------------------------------------SW--------------------------------------------------------------	     			
+	     	else if((opcode==SW))         
 	     		begin
 	     			bout2 <= regs[rd_rs2];                             //  regs[rs2_rd]->B
 		     		if(~imm16[15])                                     //  imm16>0
@@ -280,86 +268,33 @@
 	        				aout2 <= ~regs[rs1]+1;                          //  complemental code    
 	        		end  		   				               	     				
 	     	  end   
-//------------------------------------ADDUI,ANDI,ORI,XORI------------------------------------------------------	   	     			   			
-     	  else if((opcode==ANDI)|(opcode==ORI)|(opcode==XORI)|(opcode==ADDUI))              		  
+//------------------------------------ANDI,ORI,XORI------------------------------------------------------	   	     			   			
+     	  else if((opcode==ANDI)|(opcode==ORI)|(opcode==XORI))              		  
   				begin
   					aout2 <= regs[rs1];                          //  they are unsigned,regs[rs1]->A
   					imout2 <= {16'b0000_0000_0000_0000,imm16};    //  16 bit immediate extend to 32 bits
   				end
-//-----------------------------------------------SUBUI---------------------------------------------------------	   	     			   			
-     	  else if(opcode==SUBUI)              		  
-  				begin
-  					aout2 <= regs[rs1];                                 //  they are unsigned,regs[rs1]->A
-  					imout2 <= {1'b1,(~{15'b000_0000_0000_0000,imm16}+1)};  //  subtration change to addition also use complemental code 
-  				end  				
-//-------------------------------------------LHI---------------------------------------------------------------
-	      else if(opcode==LHI)              		  
-  				begin
-  					aout2 <= 0;                                  //  0->A
-  					imout2 <= {imm16,16'b0000_0000_0000_0000};    //  put the 16 bit immediate into the high half-word
-  				end         	     				
-//------------------------------------------SLLI,SRLI,SRAI-----------------------------------------------------	   	     			   			
-	     	else if((opcode==SLLI)|(opcode==SRLI)|(opcode==SRAI))              		  
-  				begin
-  					aout2 <= regs[rs1];                                             //  they are unsigned,regs[rs1]->A
-  					imout2 <= {27'b000_0000_0000_0000_0000_0000_0000,imm16_5};    //  only need the low 5 bit of the immediate 
-  				end		  
 //----------------------------------------------BEQZ,BNEZ------------------------------------------------------	   	     			   			
 	     	else if((opcode==BEQZ)|(opcode==BNEZ))         
 	     		begin
-	     			aout2 <= regs[rs1];                                  //  regs[rs1]->A	     			
-		     		if(~imm16[15])     	          		                   //  imm16>0        
+	     			aout2 <= regs[rs1];
+	     			imout2<={16'b0000_0000_0000_0000,imm16};end
+                                                   //  regs[rs1]->A	     			
+		  /*   		if(~imm16[15])     	          		                   //  imm16>0        
         			imout2 <= {16'b0000_0000_0000_0000,imm16};          //  only extend to 32 bits	          		          				
 	          else            		                                 //  imm16<0
 	            imout2 <= {1'b1,(~{16'b0000_0000_0000_0000,imm16_15}+1)};  //  complemental code,and extend to 32 bits	     				               	     				
-	     	  end  
-//-------------------------------------------------JALR--------------------------------------------------------	   	     			   			
-	     	else if(opcode==JALR)  
-	     		begin       	     		                                    
-	     		  regs[31] <= npc_in2 + 3'b100;                        //  NPC + 4 -> regs[31] (PC + 8)	
-	     			aout2 <= regs[rs1];                                    //  regs[rs1]-> A  
-	     			imout2 <= 0;                         	     			     				               	     				
-	     	  end  
-//--------------------------------------------------JR---------------------------------------------------------	   	     			   			
-	     	else if(opcode==JR)  
-	     		begin   
-	     			aout2 <= regs[rs1];                                  //  regs[rs1]->A
-	     			imout2 <= 0;   	     		                                  	     			     			     				               	     				
-	     	  end	     	  
+	     	  end  */	  
 //--------------------------------------------------J----------------------------------------------------------	   	     			   			
 	     	else if(opcode==J)  
 	     		begin	     	
-	     			if(~offset[25])      
-	     			  imout2 <= {6'b00_0000,offset[25:0]};                //  offset -> imout2
-	     			else
-	     				imout2 <= {1'b1,(~{6'b00_0000,offset[24:0]}+1)};    //  complemental code,and extend to 32 bits
+	     		    imout2<={6'b00_0000,offset[25:0]};
+	     			//if(~offset[25])      
+	     			 // imout2 <= {6'b00_0000,offset[25:0]};                //  offset -> imout2
+	     			//else
+	     				//imout2 <= {1'b1,(~{6'b00_0000,offset[24:0]}+1)};    //  complemental code,and extend to 32 bits
 	     	  end	 
-//-------------------------------------------------JAL---------------------------------------------------------	   	     			   			
-	     	else if(opcode==JAL)  
-	     		begin
-	     			regs[31] <= npc_in2 + 3'b100;                         //  NPC + 4 -> regs[31] (PC + 8)		     			
-	     			if(~offset[25])      
-	     			  imout2 <= {6'b00_0000,offset};                      //  offset -> imout2
-	     			else
-	     				imout2 <= {1'b1,(~{6'b00_0000,offset[24:0]}+1)};    //  complemental code,and extend to 32 bits
-	     	  end	     	      	
-//-------------------------------------------------TRAP--------------------------------------------------------	   	     			   				     	    
-	     	else if(opcode==TRAP)  
-	     	  begin
-	     	  	npcout2 <= 3;                                         // #3 ->PC   ?????
-	     	  	imout2 <= 0;
-	     	  end	
-//-------------------------------------------------RFE---------------------------------------------------------	   	     			   				     	  
-	     	else if(opcode==RFE)  
-	     	  begin
-            npcout2 <= 3;                                         // #3 ->PC   ?????
-            imout2 <= 0;
-	     	  end	
-/*-------------------------------------------------NOP---------------------------------------------------------	   	     			   				     	  
-	     	else if(opcode==NOP)  	     	  	     	  	     	  	     			     		
-	     		begin
-            regs[0]<= 0;                                         // ??????
-	     	  end	*/	     		     		
+     		
 //-------------------------------------------R type instruction-------------------------------------------------
 	     	else if(opcode==R_TYPE)                                                 
 	     		  begin
@@ -380,7 +315,7 @@
 			              aout2 <= {1'b1,~regs[rs1][30:0]+1};                  //  complemental code  
 	     		  		end
 //---------------------------------------------ADDU,AND,OR,XOR-------------------------------------------------	 
-              else if((func==ADDU)|(func==AND_)|(func==OR_)|(func==XOR_))
+              else if((func==AND_)|(func==OR_)|(func==XOR_))
 	     		  		begin
 	     		  			aout2 <= regs[rs1];                        //  regs[rs1] -> A
  		  		  	    bout2 <= regs[rd_rs2];                     //  regs[rd_rs2] -> B
@@ -400,19 +335,8 @@
 			          		end
 			          	else            		                                  
 			              bout2 <= {1'b1,~regs[rd_rs2][30:0]+1};               //  complemental code  
-	     		  		end 
-//------------------------------------------------SUBU---------------------------------------------------------	   	     			   			
-              else if(func==SUBU)               	               
-			          begin	     		  						          			
-			          	aout2 <= regs[rs1];                           //  regs[rs1]->A			          					            			          				       		                                  
-			            bout2 <= ~regs[rd_rs2]+1;                     //  complemental code  
 	     		  		end
-//--------------------------------------------SLL,SRL,SRA------------------------------------------------------	   	     			   			
-             else if((func==SLL)|(func==SRL)|(func==SRA))               	               
-			          begin	     		  						          			
-			          	aout2 <= regs[rs1];                                                  //  regs[rs1]->A			          					            			          				       		                                  
-			            bout2 <= {27'b000_0000_0000_0000_0000_0000_0000,regs[rd_rs2][4:0]};  //  only need the low 5 bit of regs[rd_rs2]  
-	     		  		end
+
 //----------------------------------------SLT,SGT,SLE,SGE,SEQ,SNE-----------------------------------------------	   	     			   			
             else if((func==SLT)|(func==SGT)|(func==SLE)|(func==SGE)|(func==SEQ)|(func==SNE)) 
           	  begin	     		  						          			

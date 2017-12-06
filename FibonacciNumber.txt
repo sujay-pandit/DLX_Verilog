@@ -1,0 +1,13 @@
+addi r0 r1 0
+addi r0 r2 1
+addi r0 r3 0
+addi r0 r4 0
+slti r4 r5 10
+beqz r5 r0 15
+add r2 r1 r3 
+addi r2 r1 0
+addi r3 r2 0
+addi r4 r6 0
+addi r6 r4 1
+bnez r5 r0 4
+

@@ -1,0 +1,23 @@
+       add r0, r1, 0      ; r1=0 
+       add r0, r2, 0      ; r2=0
+       slti r2, r3, 100    ; is r2<100? r3=1 else r3=0 
+       bnez r3, r0, 7     ; No, exit loop  
+       add r1, r1, r2      ; r1= r1+r2  
+       addi r2, r2, 1      ; r2= r2+1  increment loop, 
+       j 2       ;jump back to instruction 2 again until condition satisfy
+       xxxxxxxxxxxxxx      ; end of program
+fetch
+inst_i=110000 00001 00010 00001 00000 000001
+decode
+add='6'b110000'
+if(inst_i[31:26]==add)
+rs1=inst_i[25:21]
+rs2=inst_i[20:16]
+execute
+temp=rs1+rs2;
+memaccess
+writeback
+rd=inst_i[15:11]
+rd=temp
+
+
