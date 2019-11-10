@@ -1,2 +1,4 @@
 # DLX_Verilog
 Verilog implementation of DLX processor 
+More on:
+https://www.researchgate.net/publication/329491731_Design_and_Implementation_of_Power_Optimized_Dual_Core_and_Single_Core_DLX_Processor_on_FPGA
